@@ -14,6 +14,7 @@ end
 --[[
     set awairChildDevice
 ]]
+Version = "0.1"
 awairChildDevice = {}
 awairChildDevice["Awair_temp"] = {["type"] = "AwairTemperature", ["unit"] = "℃"}
 awairChildDevice["Awair_co2"] = {["type"] = "AwairMultilevelSensor", ["unit"] = "ppm"}
@@ -237,6 +238,7 @@ end
 function QuickApp:onInit()
     Utilities(self)
     quickSelf = self
+    Logging(LOG.debug,"Awair Version: ",Version)
     if self:getVariable("AWAIR_IP") == "" or self:getVariable("AWAIR_IP")  == nil then 
       self:setVariable("AWAIR_IP","127.0.0.1")
       Logging(LOG.warning, "check variable: AWAIR_IP")
