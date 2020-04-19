@@ -14,7 +14,6 @@ end
 --[[
     set awairChildDevice
 ]]
-Version = "0.1"
 awairChildDevice = {}
 awairChildDevice["Awair_temp"] = {["type"] = "AwairTemperature", ["unit"] = "℃"}
 awairChildDevice["Awair_co2"] = {["type"] = "AwairMultilevelSensor", ["unit"] = "ppm"}
@@ -26,7 +25,7 @@ AWAIR_IP = nil
 AWAIR_INTERVAL = nil
 
 --[[
-  Parent Device 
+  Parent Device
 ]]
 awairLoopKey = nil
 errs = 0
@@ -41,13 +40,8 @@ function QuickApp:turnOff()
 end
 
 function post(ev, t)
-    awairLoopKey =
-        setTimeout(
-        function()
-            event(ev)
-        end,
-        t or 0
-    )
+    awairLoopKey =  setTimeout(function() event(ev) end, t or 0 )
+    Logging(LOG.debug,  awairLoopKey) 
 end
 function httpCall(sucess, error)
     url = "http://" .. AWAIR_IP .. "/air-data/latest"
@@ -238,7 +232,6 @@ end
 function QuickApp:onInit()
     Utilities(self)
     quickSelf = self
-    Logging(LOG.debug,"Awair Version: ",Version)
     if self:getVariable("AWAIR_IP") == "" or self:getVariable("AWAIR_IP")  == nil then 
       self:setVariable("AWAIR_IP","127.0.0.1")
       Logging(LOG.warning, "check variable: AWAIR_IP")
@@ -246,9 +239,6 @@ function QuickApp:onInit()
     if self:getVariable("AWAIR_INTERVAL") == "" or self:getVariable("AWAIR_INTERVAL")  == nil then
       self:setVariable("AWAIR_INTERVAL", "300")
       Logging(LOG.warning, "check variable: AWAIR_INTERVAL (seconds)")
-    end
-    if not checkVariable then
-      return
     end
     AWAIR_IP = self:getVariable("AWAIR_IP")
     AWAIR_INTERVAL = self:getVariable("AWAIR_INTERVAL")
