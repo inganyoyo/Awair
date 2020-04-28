@@ -108,7 +108,7 @@ function QuickApp:installChildDevice()
       ["com.fibaro.humiditySensor"] = AwairHumiditySensor
     }
   )
-
+  local isSaveLogs = self.properties.saveLogs
   self.childDevices = self.childDevices or {}
   --set APP2DEV, DEV2APP
   Logging(LOG.sys, "---- set APP2DEV, DEV2APP ----")
@@ -131,6 +131,7 @@ function QuickApp:installChildDevice()
         APP2DEV[lclass][name].device = createChild[lclass](lclass, name)
         APP2DEV[lclass][name].deviceId = APP2DEV[lclass][name].device.id
         DEV2APP[APP2DEV[lclass][name].device.id] = {type = lClass, name = name}
+        APP2DEV[lClass][name].device.properties.saveLogs = isSaveLogs
       end
     end
   end
