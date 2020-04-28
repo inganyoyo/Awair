@@ -13,7 +13,6 @@ if dofile then
 end
 
 _APP = {version = "v0.1", name = "Awair", logLevel = "debug"}
-Awair = {}
 APP2DEV = {AwairTemperature = {}, AwairMultilevelSensor = {}, AwairHumiditySensor = {}}
 APP2DEV = {
   AwairTemperature = {temp = {}},
@@ -29,15 +28,7 @@ local function newAwair(ip, interval)
   local aInt = nil
   local URL = string.format("http://%s/air-data/latest", ip)
   local INTERVAL = interval * 1000
-  function post(ev, t)
-    awairLoopKey =
-    setTimeout(
-      function()
-        events(ev)
-      end,
-      t or 0
-    )
-  end
+  function post(ev, t) awairLoopKey = setTimeout(function() events(ev) end, t or 0) end
   function httpCall(sucess, error)
     url = URL
     net.HTTPClient():request(
@@ -74,7 +65,7 @@ local function newAwair(ip, interval)
           errs = 0
         end,
         ["error"] = function(e)
-          Logging(LOG.error, "ERROR: %s", json.encode(e))
+          Logger(LOG.error, "ERROR: %s", json.encode(e))
           quickSelf:updateProperty("log", json.encode(e))
           errs = errs + 1
           if errs > 3 then
@@ -86,11 +77,11 @@ local function newAwair(ip, interval)
   end
 
   function self.start()
-    Logging(LOG.debug, "---- START Awair ----")
+    Logger(LOG.debug, "---- START Awair ----")
     post({type = "polling"})
   end
   function self.stop()
-    Logging(LOG.debug, "---- STOP Awair ----")
+    Logger(LOG.debug, "---- STOP Awair ----")
     if awairLoopKey ~= nil then
       clearTimeout(awairLoopKey)
       awairLoopKey = nil
@@ -111,7 +102,7 @@ function QuickApp:installChildDevice()
   local isSaveLogs = self.properties.saveLogs
   self.childDevices = self.childDevices or {}
   --set APP2DEV, DEV2APP
-  Logging(LOG.sys, "---- set APP2DEV, DEV2APP ----")
+  Logger(LOG.sys, "---- set APP2DEV, DEV2APP ----")
   local cdevs = api.get("/devices?parentId=" .. plugin.mainDeviceId) or {}
   for _, cd in ipairs(cdevs) do
     local lClass, name = cd.properties.userDescription:match("([%w]+):(%w+)")
@@ -121,13 +112,13 @@ function QuickApp:installChildDevice()
       DEV2APP[cd.id] = {type = lClass, name = name}
     end
   end
-  Logging(LOG.sys, "-----------------------")
+  Logger(LOG.sys, "-----------------------")
 
-  Logging(LOG.sys, "---- create device ----")
+  Logger(LOG.sys, "---- create device ----")
   for lclass, devices in pairs(APP2DEV) do
     for name, device in pairs(devices) do
       if APP2DEV[lclass][name].deviceId == nil then
-        Logging(LOG.debug, "created device - %s", name)
+        Logger(LOG.debug, "created device - %s", name)
         APP2DEV[lclass][name].device = createChild[lclass](lclass, name)
         APP2DEV[lclass][name].deviceId = APP2DEV[lclass][name].device.id
         DEV2APP[APP2DEV[lclass][name].device.id] = {type = lClass, name = name}
@@ -135,26 +126,26 @@ function QuickApp:installChildDevice()
       end
     end
   end
-  Logging(LOG.sys, "-----------------------")
+  Logger(LOG.sys, "-----------------------")
 
-  Logging(LOG.sys, "---- remove device ----")
+  Logger(LOG.sys, "---- remove device ----")
   local cdevs = api.get("/devices?parentId=" .. plugin.mainDeviceId) or {}
   for _, cd in ipairs(cdevs) do
     local lClass, name = cd.properties.userDescription:match("([%w]+):(%w+)")
     if APP2DEV[lClass][name] == nil then
       plugin.deleteDevice(cd.id)
-      Logging(LOG.sys, "removed device - %s", name)
+      Logger(LOG.sys, "removed device - %s", name)
     end
   end
-  Logging(LOG.sys, "-----------------------")
+  Logger(LOG.sys, "-----------------------")
 
-  Logging(LOG.sys, "---- child device ----")
+  Logger(LOG.sys, "---- child device ----")
   for lclass, devices in pairs(APP2DEV) do
     for name, dev in pairs(devices) do
-      Logging(LOG.sys, "[%s] Class: %s, DeviceId: %s ", name, lclass, dev.deviceId)
+      Logger(LOG.sys, "[%s] Class: %s, DeviceId: %s ", name, lclass, dev.deviceId)
     end
   end
-  Logging(LOG.sys, "-----------------------")
+  Logger(LOG.sys, "-----------------------")
 end
 
 --[[ 
@@ -232,15 +223,15 @@ function QuickApp:onInit()
   quickSelf = self
   if self:getVariable("AWAIR_IP") == "" or self:getVariable("AWAIR_IP") == nil then
     self:setVariable("AWAIR_IP", "127.0.0.1")
-    Logging(LOG.warning, "check variable: AWAIR_IP")
+    Logger(LOG.warning, "check variable: AWAIR_IP")
   end
   if self:getVariable("AWAIR_INTERVAL") == "" or self:getVariable("AWAIR_INTERVAL") == nil then
     self:setVariable("AWAIR_INTERVAL", "300")
-    Logging(LOG.warning, "check variable: AWAIR_INTERVAL (seconds)")
+    Logger(LOG.warning, "check variable: AWAIR_INTERVAL (seconds)")
   end
   local AWAIR_IP = self:getVariable("AWAIR_IP")
   local AWAIR_INTERVAL = self:getVariable("AWAIR_INTERVAL")
-  Logging(LOG.sys, "AWAIR_INTERVAL %s (s)", AWAIR_INTERVAL)
+  Logger(LOG.sys, "AWAIR_INTERVAL %s (s)", AWAIR_INTERVAL)
   self:installChildDevice()
 
   oAwiar = newAwair(AWAIR_IP, AWAIR_INTERVAL)
@@ -261,7 +252,7 @@ end
 function Utilities()
   logLevel = {trace = 1, debug = 2, warning = 3, error = 4}
   LOG = {debug = "debug", warning = "warning", trace = "trace", error = "error", sys = "sys"}
-  function Logging(tp, ...)
+  function Logger(tp, ...)
     if tp == "debug" then
       if logLevel[_APP.logLevel] <= logLevel.debug then
         quickSelf:debug(string.format(...))
