@@ -4,7 +4,7 @@ Awair QuickApp for Fibaro HC3
 
 ### Installation
     1. HC3 > Settings > 5. Devices > Add Device > Other Device를 선택
-    2. Quick App 클릭 > 장치의 Name 및 Room 선택 > Device Type "Bibary switch" 선택 후 저장
+    2. Quick App 클릭 > 장치의 Name 및 Room 선택 > Device Type "Binary switch" 선택 후 저장
     3. 생성된 장치로 선택 후 Edit & Preview 탭으로 이동하여 Edit 화면으로 이동
     4. Awair.lua의 내용을 Edit 화면에 넣은 후 저장
     5. Variables 탭으로 이동하여 변수를 넣고 저장한다.
