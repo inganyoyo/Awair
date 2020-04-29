@@ -115,15 +115,15 @@ function QuickApp:installChildDevice()
   Logger(LOG.sys, "-----------------------")
 
   Logger(LOG.sys, "---- create device ----")
-  for lclass, devices in pairs(APP2DEV) do
+  for lClass, devices in pairs(APP2DEV) do
     for name, device in pairs(devices) do
-      if APP2DEV[lclass][name].deviceId == nil then
+      if APP2DEV[lClass][name].deviceId == nil then
         Logger(LOG.debug, "created device - %s", name)
-        APP2DEV[lclass][name].device = createChild[lclass](lclass, name)
-        APP2DEV[lclass][name].deviceId = APP2DEV[lclass][name].device.id
+        APP2DEV[lClass][name].device = createChild[lClass](lClass, name)
+        APP2DEV[lClass][name].deviceId = APP2DEV[lClass][name].device.id
         DEV2APP[APP2DEV[lclass][name].device.id] = {type = lClass, name = name}
-        APP2DEV[lClass][name].device.properties.saveLogs = isSaveLogs
       end
+      APP2DEV[lClass][name].device.properties.saveLogs = isSaveLogs    
     end
   end
   Logger(LOG.sys, "-----------------------")
