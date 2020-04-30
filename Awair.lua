@@ -2,6 +2,7 @@
     @file: Awair.lua (Awair.fqa)
     @author: SuSu Daddy (inganyoyo@me.com)
     @created date: 2020.04.16.
+    @git: https://github.com/inganyoyo/Awair
 ]]
 if dofile then
   dofile("fibaroapiHC3.lua")
